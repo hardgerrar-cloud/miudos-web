@@ -1,4 +1,8 @@
+"use client";
+
 import { MessageCircle, Globe } from "lucide-react";
+import { siteConfig } from "@/config/site";
+import { handleWhatsAppClick } from "@/lib/tracking";
 
 export default function Footer() {
   return (
@@ -10,22 +14,22 @@ export default function Footer() {
               MIÚDOS<span className="text-accent-neon">WEB</span>
             </div>
             <p className="text-sm text-gray-500 max-w-xs">
-              Curadoria de ofertas reais e achadinhos úteis todos os dias no seu WhatsApp.
+              Grupo 100% gratuito de achadinhos conferidos e selecionados todos os dias no seu WhatsApp.
             </p>
           </div>
 
           <div className="text-center md:text-right">
             <div className="flex justify-center md:justify-end gap-6 mb-4">
-              <a href="#" className="text-gray-400 hover:text-accent-neon transition-colors">
+              <button onClick={() => handleWhatsAppClick("footer", siteConfig.whatsappGroupUrl)} className="text-gray-400 hover:text-accent-neon transition-colors">
                 <MessageCircle className="w-6 h-6" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-accent-neon transition-colors">
+              </button>
+              <a href={siteConfig.url} className="text-gray-400 hover:text-accent-neon transition-colors">
                 <Globe className="w-6 h-6" />
               </a>
             </div>
             <p className="text-xs text-gray-600">
               &copy; 2026 Miúdos Web. Todos os direitos reservados.<br />
-              Ofertas e preços podem variar de acordo com o estoque das lojas.
+              Ofertas e preços podem variar de acordo com o estoque das lojas. Não realizamos vendas diretas.
             </p>
           </div>
         </div>

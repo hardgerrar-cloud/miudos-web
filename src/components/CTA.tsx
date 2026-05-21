@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
+import { siteConfig } from "@/config/site";
+import { handleWhatsAppClick } from "@/lib/tracking";
 
 export default function CTA() {
   return (
@@ -18,24 +20,24 @@ export default function CTA() {
           <div className="absolute top-0 left-0 w-full h-1 bg-accent-neon shadow-[0_0_15px_rgba(0,255,136,0.8)]" />
           
           <h2 className="text-4xl md:text-6xl font-bold mb-8">
-            Entre agora e comece a receber os melhores achados da internet.
+            Quer receber achados conferidos sem precisar procurar?
           </h2>
           <p className="text-xl text-gray-400 mb-12">
-            As melhores ofertas acabam rápido. Não fique de fora da nossa comunidade VIP.
+            Entre gratuitamente no grupo do Miúdos Web e acompanhe as próximas ofertas direto no WhatsApp.
           </p>
 
-          <motion.a
+          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            href="https://chat.whatsapp.com/G2exRfPG5465YtpgegKztV"
+            onClick={() => handleWhatsAppClick("final_cta", siteConfig.whatsappGroupUrl)}
             className="inline-flex items-center gap-4 bg-accent-neon text-primary-dark px-12 py-6 rounded-full font-black text-2xl shadow-neon transition-all"
           >
             <MessageCircle className="w-8 h-8" />
-            Quero Entrar no Grupo
-          </motion.a>
+            Entrar no grupo agora
+          </motion.button>
           
           <p className="mt-8 text-sm text-gray-500 font-medium">
-            🔥 As melhores ofertas acabam rápido.
+            Grupo silencioso • Só admins enviam • Preços e estoque podem mudar conforme as lojas
           </p>
         </motion.div>
       </div>
