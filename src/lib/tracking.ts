@@ -16,11 +16,24 @@ export const trackEvent = (eventName: string, options: Record<string, unknown> =
   }
 };
 
+let isNavigating = false;
+
 export const handleWhatsAppClick = (source: string, url: string) => {
-  trackEvent("WhatsAppGroupClick", { source, destination: "whatsapp_group" });
-  trackEvent("Lead", { content_name: "whatsapp_group_join" });
+  if (isNavigating) return;
+  isNavigating = true;
+
+  trackEvent("Lead", {
+    content_name: "miudos_web_general_whatsapp_group",
+    source: source,
+    destination: "whatsapp_group_general",
+  });
 
   setTimeout(() => {
     window.location.href = url;
+    
+    // Unlock after 1.5s in case the user navigates back quickly or the link fails to open
+    setTimeout(() => {
+      isNavigating = false;
+    }, 1500);
   }, 200);
 };
