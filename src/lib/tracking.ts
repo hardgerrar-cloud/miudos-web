@@ -28,6 +28,7 @@ export const handleWhatsAppClick = (source: string, url: string) => {
     destination: "whatsapp_group_general",
   });
 
+  // Increased timeout to 600ms to ensure the pixel request has time to complete on mobile
   setTimeout(() => {
     window.location.href = url;
     
@@ -35,5 +36,5 @@ export const handleWhatsAppClick = (source: string, url: string) => {
     setTimeout(() => {
       isNavigating = false;
     }, 1500);
-  }, 200);
+  }, 600);
 };
