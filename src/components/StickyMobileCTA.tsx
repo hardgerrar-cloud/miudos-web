@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { siteConfig } from "@/config/site";
 import { handleWhatsAppClick } from "@/lib/tracking";
 
@@ -11,8 +11,8 @@ export default function StickyMobileCTA() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show CTA after scrolling down 300px
-      if (window.scrollY > 300) {
+      // Show after scrolling past the first 400px (hero section roughly)
+      if (window.scrollY > 400) {
         setIsVisible(true);
       } else {
         setIsVisible(false);
@@ -30,19 +30,15 @@ export default function StickyMobileCTA() {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          className="fixed bottom-0 left-0 w-full z-40 p-4 md:hidden bg-gradient-to-t from-primary-dark via-primary-dark/90 to-transparent pb-6 pt-12 pointer-events-none"
+          transition={{ duration: 0.3 }}
+          className="fixed bottom-0 left-0 right-0 p-4 md:hidden z-50 bg-gradient-to-t from-primary-dark via-primary-dark/90 to-transparent pb-6 pt-10"
         >
           <button
             onClick={() => handleWhatsAppClick("sticky_mobile", siteConfig.whatsappGroupUrl)}
-            className="w-full flex flex-col items-center justify-center gap-1 bg-accent-neon text-primary-dark py-4 px-6 rounded-full font-black text-lg shadow-[0_0_20px_rgba(0,255,136,0.4)] pointer-events-auto"
+            className="w-full flex justify-center items-center gap-2 bg-accent-neon text-primary-dark px-6 py-4 rounded-full font-bold text-lg shadow-[0_0_20px_rgba(0,255,136,0.3)] animate-pulse-glow"
           >
-            <div className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5" />
-              Entrar no grupo gratuito
-            </div>
-            <span className="text-[11px] font-semibold opacity-80 uppercase tracking-wider">
-              Grupo silencioso
-            </span>
+            <MessageCircle className="w-6 h-6" />
+            ENTRAR NO GRUPO
           </button>
         </motion.div>
       )}

@@ -35,4 +35,22 @@ body {
   .text-glow {
     text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
   }
+  
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-33.33%); }
+  }
+
+  @keyframes marquee-slow {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .animate-marquee {
+    animation: marquee 25s linear infinite;
+  }
+  
+  .animate-marquee-slow {
+    animation: marquee-slow 40s linear infinite;
+  }
 }

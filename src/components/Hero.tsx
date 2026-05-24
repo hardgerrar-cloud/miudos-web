@@ -5,30 +5,8 @@ import Image from "next/image";
 import { MessageCircle, ShieldCheck } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { handleWhatsAppClick } from "@/lib/tracking";
-import { useEffect, useState } from "react";
 
 export default function Hero() {
-  const [memberCount, setMemberCount] = useState(0);
-
-  useEffect(() => {
-    let current = 0;
-    const target = 24235;
-    const duration = 2000;
-    const increment = target / (duration / 16);
-
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= target) {
-        setMemberCount(target);
-        clearInterval(timer);
-      } else {
-        setMemberCount(Math.floor(current));
-      }
-    }, 16);
-
-    return () => clearInterval(timer);
-  }, []);
-
   return (
     <section className="relative pt-32 pb-20 overflow-hidden">
       {/* Background Glow */}
@@ -44,17 +22,19 @@ export default function Hero() {
             className="text-left"
           >
             <div className="flex flex-wrap gap-2 mb-6">
-              <span className="px-3 py-1 text-xs font-bold bg-white/5 border border-white/10 rounded-full">100% Gratuito</span>
-              <span className="px-3 py-1 text-xs font-bold bg-white/5 border border-white/10 rounded-full">Grupo Silencioso</span>
+              <span className="px-3 py-1 text-xs font-bold bg-white/5 border border-white/10 rounded-full">100% gratuito</span>
+              <span className="px-3 py-1 text-xs font-bold bg-white/5 border border-white/10 rounded-full">Zero flood</span>
               <span className="px-3 py-1 text-xs font-bold bg-white/5 border border-white/10 rounded-full">Só admins enviam</span>
-              <span className="px-3 py-1 text-xs font-bold bg-white/5 border border-white/10 rounded-full">Ofertas conferidas</span>
+              <span className="px-3 py-1 text-xs font-bold bg-white/5 border border-white/10 rounded-full">Achados conferidos</span>
+              <span className="px-3 py-1 text-xs font-bold bg-white/5 border border-white/10 rounded-full">+50 grupos criados</span>
+              <span className="px-3 py-1 text-xs font-bold bg-white/5 border border-white/10 rounded-full">Preços podem mudar</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-              Achadinhos conferidos direto no seu WhatsApp.
+            <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6 text-white tracking-tight">
+              Você ainda tá pagando caro porque procura sozinho.
             </h1>
             <p className="text-xl text-gray-400 mb-10 max-w-xl">
-              Entre gratuitamente no grupo do Miúdos Web e receba ofertas de roupas, beleza, casa, tecnologia e utilidades em um grupo privado, silencioso e organizado.
+              O Miúdos Web garimpa achados, cupons e promoções em lojas parceiras e manda tudo em um grupo gratuito, silencioso e organizado no WhatsApp.
             </p>
 
             <div className="space-y-4">
@@ -66,26 +46,18 @@ export default function Hero() {
                   className="inline-flex justify-center items-center gap-3 bg-accent-neon text-primary-dark px-10 py-5 rounded-full font-bold text-lg shadow-[0_0_20px_rgba(0,255,136,0.3)] transition-all hover:shadow-[0_0_30px_rgba(0,255,136,0.5)]"
                 >
                   <MessageCircle className="w-6 h-6" />
-                  Entrar no grupo agora
+                  CHEGA. QUERO ENTRAR NO GRUPO.
                 </motion.button>
-                <motion.a
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  href="#como-funciona"
-                  className="inline-flex justify-center items-center gap-3 bg-white/5 text-white border border-white/10 px-10 py-5 rounded-full font-bold text-lg transition-all hover:bg-white/10"
-                >
-                  Ver como funciona
-                </motion.a>
               </div>
               <p className="text-sm text-gray-500 pl-2">
                 <ShieldCheck className="w-4 h-4 inline-block mr-1 -mt-1 text-accent-neon" />
-                Você será redirecionado para o WhatsApp. Sem spam.
+                Você será enviado para o WhatsApp. Sai quando quiser… mas acho que você vai ficar.
               </p>
             </div>
 
             <div className="mt-12 flex items-center gap-4">
               <span className="text-lg text-gray-400">
-                Mais de <span className="text-accent-neon font-bold">{memberCount.toLocaleString('pt-BR')} pessoas</span> aguardam ofertas
+                Grupo nº 51 do Miúdos Web. Mais de <span className="text-accent-neon font-bold">50 mil pessoas</span> somadas nos nossos grupos de achados.
               </span>
             </div>
           </motion.div>
@@ -115,8 +87,8 @@ export default function Hero() {
             >
               <div className="w-3 h-3 bg-accent-neon rounded-full animate-pulse" />
               <div>
-                <p className="text-xs font-bold text-accent-neon">EXEMPLO DE ACHADO</p>
-                <p className="text-sm font-medium">Calça Jeans por R$ 115,99</p>
+                <p className="text-xs font-bold text-accent-neon">NOVO GRUPO ABERTO</p>
+                <p className="text-sm font-medium">Acesso liberado agora</p>
               </div>
             </motion.div>
           </motion.div>

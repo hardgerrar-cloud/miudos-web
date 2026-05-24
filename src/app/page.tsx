@@ -1,26 +1,37 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import Benefits from "@/components/Benefits";
-import Products from "@/components/Products";
+import AnimatedMarquee from "@/components/AnimatedMarquee";
+import PainSection from "@/components/PainSection";
 import HowItWorks from "@/components/HowItWorks";
+import Comparison from "@/components/Comparison";
 import SocialProof from "@/components/SocialProof";
-import TrustSection from "@/components/TrustSection";
-import FAQ from "@/components/FAQ";
+import BrandsMarquee from "@/components/BrandsMarquee";
+import WhatToExpect from "@/components/WhatToExpect";
+import Testimonials from "@/components/Testimonials";
+import Transparency from "@/components/Transparency";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import StickyMobileCTA from "@/components/StickyMobileCTA";
+import FacebookPixel from "@/components/FacebookPixel";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <main className="min-height-screen">
+    <main className="min-h-screen bg-primary-dark">
+      <Suspense fallback={null}>
+        <FacebookPixel />
+      </Suspense>
       <Navbar />
       <Hero />
-      <Benefits />
-      <Products />
+      <AnimatedMarquee />
+      <PainSection />
       <HowItWorks />
+      <Comparison />
       <SocialProof />
-      <TrustSection />
-      <FAQ />
+      <BrandsMarquee />
+      <WhatToExpect />
+      <Testimonials />
+      <Transparency />
       <CTA />
       <Footer />
       <StickyMobileCTA />
