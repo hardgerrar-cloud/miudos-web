@@ -5,11 +5,16 @@ import { useSearchParams, usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
 
 interface TrackingLog {
+  logId: string;
   eventName: string;
+  eventId: string;
   params: Record<string, unknown>;
   timestamp: string;
-  fbqExists: boolean;
-  error?: string;
+  browserStatus: string;
+  serverStatus: string;
+  browserError?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  serverResponse?: any;
 }
 
 export default function PixelDebug() {
@@ -83,21 +88,34 @@ export default function PixelDebug() {
           <span className="text-[10px] text-gray-500">Auto-updating</span>
         </div>
         {logs.slice().reverse().map((log, i) => (
-          <div key={i} className={`p-3 rounded-lg border ${log.error ? 'border-red-500/50 bg-red-500/10' : log.fbqExists ? 'border-white/10 bg-white/5' : 'border-yellow-500/50 bg-yellow-500/10'}`}>
+          <div key={i} className={`p-3 rounded-lg border ${log.browserStatus === 'FAILED' && log.serverStatus === 'FAILED' ? 'border-red-500/50 bg-red-500/10' : log.serverStatus === 'SUCCESS' ? 'border-white/10 bg-white/5' : 'border-yellow-500/50 bg-yellow-500/10'}`}>
             <div className="flex justify-between items-center mb-1">
-              <span className={`font-bold text-sm ${log.error ? 'text-red-400' : log.fbqExists ? 'text-accent-neon' : 'text-yellow-400'}`}>
+              <span className={`font-bold text-sm ${log.browserStatus === 'FAILED' && log.serverStatus === 'FAILED' ? 'text-red-400' : 'text-accent-neon'}`}>
                 {log.eventName}
               </span>
               <span className="text-gray-500 text-[9px]">{new Date(log.timestamp).toLocaleTimeString()}</span>
             </div>
+            <div className="text-[9px] text-gray-400 mb-2 truncate">ID: {log.eventId}</div>
             <div className="text-gray-300 mt-1 whitespace-pre-wrap break-all bg-black/30 p-2 rounded">
               {JSON.stringify(log.params)}
             </div>
-            {!log.fbqExists && (
-              <div className="text-yellow-400 mt-2 text-[10px] font-bold">⚠️ FBQ Missing / Retried</div>
+            
+            <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-white/10">
+              <div>
+                <span className="text-[9px] uppercase text-gray-500 block">Browser</span>
+                <span className={`text-[10px] font-bold ${log.browserStatus === 'SUCCESS' ? 'text-accent-neon' : log.browserStatus === 'PENDING' ? 'text-yellow-400' : 'text-red-400'}`}>{log.browserStatus}</span>
+              </div>
+              <div>
+                <span className="text-[9px] uppercase text-gray-500 block">Server CAPI</span>
+                <span className={`text-[10px] font-bold ${log.serverStatus === 'SUCCESS' ? 'text-accent-neon' : log.serverStatus === 'PENDING' ? 'text-yellow-400' : 'text-red-400'}`}>{log.serverStatus}</span>
+              </div>
+            </div>
+
+            {log.browserError && (
+              <div className="text-red-400 mt-2 text-[9px]">Browser Err: {log.browserError}</div>
             )}
-            {log.error && (
-              <div className="text-red-400 mt-2 text-[10px] font-bold">❌ Error: {log.error}</div>
+            {log.serverResponse && log.serverStatus === 'FAILED' && (
+              <div className="text-red-400 mt-2 text-[9px]">CAPI Err: {JSON.stringify(log.serverResponse)}</div>
             )}
           </div>
         ))}

@@ -15,13 +15,22 @@ export default function FacebookPixel() {
   const scrollFired = useRef(false);
   const qualityFired = useRef(false);
   
+  // Track last route to prevent React Strict Mode duplicate PageView
+  const lastTrackedPath = useRef<string | null>(null);
+  
   // Track timers and states for QualityVisit
   const timeSpentRef = useRef(0);
   const reachedHalfScrollRef = useRef(false);
 
   useEffect(() => {
+    // Prevent duplicate PageView in Strict Mode or re-renders of the same route
+    if (lastTrackedPath.current === pathname) {
+      return;
+    }
+    lastTrackedPath.current = pathname;
+
     // Fire PageView on route change
-    trackEvent("PageView");
+    trackEvent("PageView", { page: pathname });
 
     // Reset tracking states for new page loads
     engagedFired.current = false;

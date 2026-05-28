@@ -5,7 +5,19 @@ declare global {
   }
 }
 
-const logInternalEvent = (eventName: string, options: Record<string, unknown> = {}, fbqExists: boolean, error?: string) => {
+// Simple fallback for crypto.randomUUID if not available in old browsers
+const generateId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+};
+
+const updateInternalLog = (logId: string, eventName: string, eventId: string, options: Record<string, unknown>, updates: Record<string, unknown>) => {
   if (typeof window === "undefined") return;
   
   try {
@@ -15,13 +27,23 @@ const logInternalEvent = (eventName: string, options: Record<string, unknown> = 
       logs = JSON.parse(logsStr);
     }
     
-    logs.push({
-      eventName,
-      params: options,
-      timestamp: new Date().toISOString(),
-      fbqExists,
-      error
-    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const existingIndex = logs.findIndex((l: any) => l.logId === logId);
+    
+    if (existingIndex >= 0) {
+      logs[existingIndex] = { ...logs[existingIndex], ...updates };
+    } else {
+      logs.push({
+        logId,
+        eventName,
+        eventId,
+        params: options,
+        timestamp: new Date().toISOString(),
+        browserStatus: 'PENDING',
+        serverStatus: 'PENDING',
+        ...updates
+      });
+    }
     
     // Keep last 20
     if (logs.length > 20) {
@@ -29,46 +51,88 @@ const logInternalEvent = (eventName: string, options: Record<string, unknown> = 
     }
     
     sessionStorage.setItem("miudos_tracking_log", JSON.stringify(logs));
-    
-    // Dispatch a custom event so the debug component can update in real-time
     window.dispatchEvent(new Event('miudos_tracking_updated'));
   } catch {
     // Ignore storage errors
   }
 };
 
-const executeFbq = (eventName: string, options: Record<string, unknown>) => {
-  if (eventName === "Lead" || eventName === "PageView") {
-    window.fbq!("track", eventName, options);
-  } else {
-    window.fbq!("trackCustom", eventName, options);
-  }
+const getCookie = (name: string) => {
+  if (typeof document === 'undefined') return undefined;
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  if (match) return match[2];
+  return undefined;
 };
 
 export const trackEvent = (eventName: string, options: Record<string, unknown> = {}) => {
   if (typeof window === "undefined") return;
 
+  const eventId = generateId();
+  const logId = generateId();
+
+  updateInternalLog(logId, eventName, eventId, options, {});
+
+  // 1. Browser Pixel
   const attemptFbq = (delay: number, retriesLeft: number) => {
     setTimeout(() => {
       if (window.fbq) {
         try {
-          executeFbq(eventName, options);
-          logInternalEvent(eventName, options, true);
+          if (eventName === "Lead" || eventName === "PageView") {
+            window.fbq("track", eventName, options, { eventID: eventId });
+          } else {
+            window.fbq("trackCustom", eventName, options, { eventID: eventId });
+          }
+          updateInternalLog(logId, eventName, eventId, options, { browserStatus: 'SUCCESS' });
         } catch (err) {
-          logInternalEvent(eventName, options, true, err instanceof Error ? err.message : String(err));
+          updateInternalLog(logId, eventName, eventId, options, { browserStatus: 'FAILED', browserError: err instanceof Error ? err.message : String(err) });
         }
       } else if (retriesLeft > 0) {
-        // Next delays: 300ms, 700ms, 1200ms
         const nextDelay = retriesLeft === 3 ? 300 : retriesLeft === 2 ? 700 : 1200;
         attemptFbq(nextDelay, retriesLeft - 1);
       } else {
-        console.warn(`[Pixel Event Missed] ${eventName}`, options);
-        logInternalEvent(eventName, options, false, "fbq_not_available after retries");
+        updateInternalLog(logId, eventName, eventId, options, { browserStatus: 'FAILED', browserError: "fbq_not_available after retries" });
       }
     }, delay);
   };
 
   attemptFbq(0, 3);
+
+  // 2. Server-Side CAPI
+  try {
+    fetch('/api/meta-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        eventName,
+        eventId,
+        sourceUrl: window.location.href,
+        customData: options,
+        userAgent: navigator.userAgent,
+        fbc: getCookie('_fbc'),
+        fbp: getCookie('_fbp'),
+        timestamp: new Date().toISOString()
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      updateInternalLog(logId, eventName, eventId, options, { 
+        serverStatus: data.success ? 'SUCCESS' : 'FAILED', 
+        serverResponse: data 
+      });
+    })
+    .catch(err => {
+      updateInternalLog(logId, eventName, eventId, options, { 
+        serverStatus: 'FAILED', 
+        serverResponse: { error: String(err) } 
+      });
+    });
+  } catch (err) {
+    updateInternalLog(logId, eventName, eventId, options, { 
+      serverStatus: 'FAILED', 
+      serverResponse: { error: String(err) } 
+    });
+  }
 };
 
 let isNavigating = false;
