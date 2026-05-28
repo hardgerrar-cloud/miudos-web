@@ -22,15 +22,35 @@ export const handleWhatsAppClick = (source: string, url: string) => {
   if (isNavigating) return;
   isNavigating = true;
 
+  // Track existing Lead event
   trackEvent("Lead", {
     content_name: "miudos_web_general_whatsapp_group",
     source: source,
     destination: "whatsapp_group_general",
   });
 
+  // Track additional requested events
+  trackEvent("LandingCTAClick", { source });
+  trackEvent("WhatsAppGroupClick", { source, destination_url: url });
+
+  // Prevent duplicate Lead on the /entrar page
+  try {
+    sessionStorage.setItem("miudos_lead_fired", "true");
+  } catch {
+    // Ignore sessionStorage errors
+  }
+
   // Increased timeout to 600ms to ensure the pixel request has time to complete on mobile
   setTimeout(() => {
-    window.location.href = url;
+    try {
+      const currentUrl = new URL(window.location.href);
+      const searchParams = new URLSearchParams(currentUrl.search);
+      searchParams.set("src", source);
+      
+      window.location.href = `/entrar?${searchParams.toString()}`;
+    } catch {
+      window.location.href = `/entrar?src=${source}`;
+    }
     
     // Unlock after 1.5s in case the user navigates back quickly or the link fails to open
     setTimeout(() => {
