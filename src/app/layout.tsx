@@ -4,6 +4,7 @@ import "./globals.css";
 import { siteConfig } from "@/config/site";
 import { Suspense } from "react";
 import FacebookPixel from "@/components/FacebookPixel";
+import PixelDebug from "@/components/PixelDebug";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -37,6 +38,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${outfit.variable} font-sans antialiased`}>
         <Suspense fallback={null}>
           <FacebookPixel />
+          <PixelDebug />
         </Suspense>
         {children}
       </body>

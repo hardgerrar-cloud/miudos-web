@@ -25,8 +25,8 @@ function EntrarContent() {
     // Fire PageView specific to this redirect page
     trackEvent("WhatsAppRedirectPageView", { source });
 
-    // Delay between 700ms and 1200ms
-    const delay = Math.floor(Math.random() * 500) + 700;
+    // Delay between 1200ms and 1700ms
+    const delay = Math.floor(Math.random() * 500) + 1200;
 
     const timer = setTimeout(() => {
       const windowGlobal = window as unknown as { opera?: string; MSStream?: unknown };
@@ -69,7 +69,9 @@ function EntrarContent() {
       // Ignore
     }
 
-    window.location.href = groupUrl;
+    setTimeout(() => {
+      window.location.href = groupUrl;
+    }, 500);
   };
 
   const handleCopyLink = () => {
